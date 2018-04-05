@@ -1,0 +1,28 @@
+%Reference https://en.wikipedia.org/wiki/Fresnel_diffraction
+
+%Final Location (Maybe we need spread across the 3d plane)
+x =
+y = 
+z = 
+%Lambda is the wavelength in meers
+lambda = 10; %Meters
+%Distance from aperature to the abservation point (3-D space)
+r = sqrt( (x - x_prime)^2 + (y - y_prime)^2 + z^2 );
+%K Term
+k = (2*pi())/lambda;
+
+%We need to define our aperature
+
+%The triangular aperature is an equilateral triangle with a uniform lengh l
+
+
+  
+
+% Creating the function to be observed for the double integral
+% Reference https://www.mathworks.com/help/matlab/ref/integral2.html
+
+fun = @(x_prime,y_prime)  .* (e^(j*k*r))/r
+
+
+
+q = 1/(j*lamda) * integral2(fun,0,1,0,ymax)
