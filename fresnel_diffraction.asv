@@ -1,28 +1,61 @@
-%Reference https://en.wikipedia.org/wiki/Fresnel_diffraction
+clc; close all; clear all;
 
-%Final Location (Maybe we need spread across the 3d plane)
-x =
-y = 
-z = 
-%Lambda is the wavelength in meers
-lambda = 10; %Meters
-%Distance from aperature to the abservation point (3-D space)
-r = sqrt( (x - x_prime)^2 + (y - y_prime)^2 + z^2 );
+%Reference https://en.wikipedia.org/wiki/Fresnel_diffraction
+%For ease of calculation. The observation point is on the X-Y plane
+%with Z distance away. 
+xi = 0;
+yi = 0;
+zi = 0.5; %meters (to stay within the fresnel region)
+lambda = 0.01; %meters (our generic wavelength going through the aperature
+
 %K Term
 k = (2*pi())/lambda;
 
-%We need to define our aperature
+%generic length of our triangle. Using unit length for simplicity. 
+length = 1;
+length_step = length/100;
 
-%The triangular aperature is an equilateral triangle with a uniform lengh l
+%Predefining the coefficient.
+xo = 0;
 
 
+%Not perfect but it's a triangle
+%Splitting the values in 2 portions because a triangle is made up of two
+%lines  / and \.
+yo_plus = (sqrt(3)/2.*xo) + 0.13; %- (1/sqrt(2));
+yo_minus = (-sqrt(3)/2.*xo) + 0.13;% - (1/sqrt(2));
+%yo = horzcat(yo_plus,yo_minus);
+%Showing our triangle
+%plot(xo,yo);
+
+
+%According to class notes. we can assume zi >> xi - xo and zi >> yi - yo
+%so we can state:
+r_plus = zi + ( ((xi-xo).^2 + (yi - yo_plus).^2) /(2*zi));
+r_minus = zi + ( ((xi-xo).^2 + (yi - yo_minus).^2) /(2*zi));
+
+%%
   
-
-% Creating the function to be observed for the double integral
+% Creating the function to be observed for the integral across the 
+% area of the triangle.
 % Reference https://www.mathworks.com/help/matlab/ref/integral2.html
 
-fun = @(x_prime,y_prime)  .* (e^(j*k*r))/r
+% We integrate across the x line, with the triangle side slop to solve for 
+% 2-D area of the triangle. Done so in some notes to the side.
+fun_plus = @(xo) -sqrt(3).*xo .* (exp(j.*k.*r_plus))./r_plus;
+fun_minus = @(xo) -sqrt(3).*xo .* (exp(j.*k.*r_minus))./r_minus;
 
 
+%Since the function above 
 
-q = 1/(j*lamda) * integral2(fun,0,1,0,ymax)
+q_plus = ( exp(j.*k.*r_plus)./(j*lambda*zi) ) * integral(fun_plus,-length/2,0);
+%     ^ Constant portion                        ^Integral Aspect
+
+q_minus = ( exp(j.*k.*r_minus)./(j*lambda*zi) ) * integral(fun_minus,-length/2,0);
+%     ^ Constant portion                        ^Integral Aspect
+
+%After integrating across both of the triangle halves, these two halves are
+%are then summed to give us the final e&m value at the point in space 
+%which is defined as (xi,yi,zi)
+
+Q_total = q_plu
