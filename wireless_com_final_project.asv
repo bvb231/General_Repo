@@ -271,33 +271,29 @@ Total_Power_Recieved_watts_no_phase(k,:) = Path1_watts(k) + Path2_watts(k,:) + P
 Total_Power_Recieved_watts(Total_Power_Recieved_watts<0) = 0.00000001;
 
 Total_Power_Recieved(k,:) = 10*log10(Total_Power_Recieved_watts(k,:));
-Total_Power_Recieved_no_phase(k,:) = 10*log10(Total_Power_Recieved_watts_no_phase(k,:));
-
 end
 
 %Plotting all of the 3 paths
 figure(1);
+
 plot(       ...%walking_path, Total_Power_Recieved(1,:), ...
-            walking_path, Total_Power_Recieved_no_phase(1,:)...
+            walking_path, Total_Power_Recieved_watts_no_phase(1,:)...
      );
 title('');
 legend('x = 3m');
 ylabel('Recieved Energy [dB]');
 xlabel('Walker Location [m] ');
 
-
-figure(2);
 plot(       ...%walking_path, Total_Power_Recieved(2,:), ...
-            walking_path, Total_Power_Recieved_no_phase(2,:)...
+            walking_path, Total_Power_Recieved_watts_no_phase(2,:)...
     );
 title('');
 legend('x = 12m');
 ylabel('Recieved Energy [dB]');
 xlabel('Walker Location [m] ');
 
-figure(3);
 plot(       ...%walking_path, Total_Power_Recieved(3,:), ...
-            walking_path, Total_Power_Recieved_no_phase(3,:)...
+            walking_path, Total_Power_Recieved_watts_no_phase(3,:)...
     );
 title('');
 legend('x = 18m');

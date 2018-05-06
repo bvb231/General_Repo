@@ -1,58 +1,61 @@
-clc; close all; clear all;
+clear all; close all; clc;
 
-%Reference https://en.wikipedia.org/wiki/Fresnel_diffraction
-%For ease of calculation. The observation point is on the X-Y plane
-%with Z distance away. 
-xi = 0;
-yi = 0;
-zi = 0.5; %meters (to stay within the fresnel region)
-lambda = 0.01; %meters (our generic wavelength going through the aperature
-
-%K Term
-k = (2*pi())/lambda;
-
-%generic length of our triangle. Using unit length for simplicity. 
-length = 1;
-length_step = length/100;
-
-%Predefining the coefficient.
-xo = 0;
-
-
-%Not perfect but it's a triangle
-%Splitting the values in 2 portions because a triangle is made up of two
-%lines  / and \.
-yo_plus = (sqrt(3)/2.*xo) + 0.13; %- (1/sqrt(2));
-yo_minus = (-sqrt(3)/2.*xo) + 0.13;% - (1/sqrt(2));
-
-
-%According to class notes. we can assume zi >> xi - xo and zi >> yi - yo
-%so we can state:
-r_plus = zi + ( ((xi-xo).^2 + (yi - yo_plus).^2) /(2*zi));
-r_minus = zi + ( ((xi-xo).^2 + (yi - yo_minus).^2) /(2*zi));
+%Creating the background
+N = 1000;
+M = 1000;
+whiteImage = 255 * ones(N, M, 'uint8');
+imshow(whiteImage);
 
 %%
-  
-% Creating the function to be observed for the integral across the 
-% area of the triangle.
-% Reference https://www.mathworks.com/help/matlab/ref/integral2.html
+%Creating the triangle for us
 
-% We integrate across the x line, with the triangle side slop to solve for 
-% 2-D area of the triangle. Done so in some notes to the side.
-fun_plus = @(xo) -sqrt(3).*xo .* (exp(j.*k.*r_plus))./r_plus;
-fun_minus = @(xo) -sqrt(3).*xo .* (exp(j.*k.*r_minus))./r_minus;
+slope = sqrt(3);
+side_length = 300;
+
+%Building our background image
+rows        = side_length*2;
+columns     = rows;
+x_pos = (0:(side_length/2)-0.1);
+x_neg = (side_length/2:side_length);
+%y = mx + b form
+y_pos = (slope.*x_pos);
+y_neg = (-slope .*x_neg)+(side_length * sqrt(3));
+
+%Combining the two vectors together.
+y = horzcat(y_pos,y_neg);
+x = horzcat(x_pos,x_neg);
+z = ones(1,length(x));
+y_zero = zeros(1,length(x));
+
+y = uint8(y);
+x = uint8(x);
+
+ 
+aperature_1(2,:) = y;
+aperature_1(1,:) = x;
+aperature_1(3,:) = zeros(1,length(x));
+
+aperature_2(2,:) = y_zero;
+aperature_2(1,:) = x;
+aperature_2(3,:) = zeros(1,length(x));
 
 
-%Since the function above 
+% figure(1);
+% plot(x_pos,y_pos)
+% figure(2);
+% plot(x_neg,y_neg)
+% figure(3);
+%figure(1);
+line(x,y,z)
+hold on;
+line(x,y_zero,z)
+ 
+% figure(2);
+% mesh(aperature)
 
-q_plus = ( exp(j.*k.*r_plus)./(j*lambda*zi) ) * integral(fun_plus,-length/2,0);
-%     ^ Constant portion                        ^Integral Aspect
 
-q_minus = ( exp(j.*k.*r_minus)./(j*lambda*zi) ) * integral(fun_minus,-length/2,0);
-%     ^ Constant portion                        ^Integral Aspect
+figure(3);
+A = fft2(whiteImage);
+imagesc(abs(fftshift(A)))
 
-%After integrating across both of the triangle halves, these two halves are
-%are then summed to give us the final e&m value at the point in space 
-%which is defined as (xi,yi,zi)
 
-Q_total = q_plus + q_minus; 
